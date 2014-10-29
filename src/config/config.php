@@ -11,7 +11,7 @@ return array(
     | else meaningful.
     |
     */
-    'index' => 'default'
+    'index' => 'default',
 
     /*
     |--------------------------------------------------------------------------
