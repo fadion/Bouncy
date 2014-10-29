@@ -101,6 +101,23 @@ The method is intentionally prefixed with 'remove' instead of 'delete', so you d
 
 Bouncy knows when a model is created, saved or deleted and it will reflect those changes to the indexes. Except for the initial index creation of an existing database, you'll generally won't need to use the above methods to manipulate indexes. Any new model's index will be added automatically, will be updated on save and removed when the model is deleted.
 
+The only cases where Bouncy can't update or delete indexes are when doing mass updates or deletes. Those queries run directly on the query builder and it's impossible to override them. I'm investigating for a good way of doing this, but for now, the following queries don't reflect changes on indexes:
+
+```php
+Product::where('price', 100)->update(['price' => 110]);
+// or
+Product::where('price', 100)->delete();
+``
+
+You can still call the indexing methods manually and work the limitation. It will add an extra database query, but at least it will keep data in sync.
+```php
+Product::where('price', 100)->get()->updateIndex(['price' => 110]);
+Product::where('price', 100)->update(['price' => 110]);
+// or
+Product::where('price', 100)->get()->removeIndex();
+Product::where('price', 100)->delete();
+```
+
 ## Searching
 
 Now on the real deal! Searching is where Elasticsearch shines and why you're bothering with it. Bouncy doesn't get in the way, allowing you to build any search query you can imagine in exactly the same way you do with Elasticsearch's client. This allows for great flexibility, while providing your results with a collection of Eloquent models.
