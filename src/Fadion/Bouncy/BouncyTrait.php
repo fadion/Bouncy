@@ -231,23 +231,25 @@ trait BouncyTrait {
      */
     public function save(Array $options = array())
     {
-        $params = $this->basicElasticParams(true);
+        if (Config::get('bouncy::config.auto_index')) {
+            $params = $this->basicElasticParams(true);
 
-        // When creating a model, Eloquent still
-        // uses the save() method. In this case,
-        // the field still doesn't have an id, so
-        // it is saved first, and then indexed.
-        if (! $params['id']) {
-            $saved = parent::save($options);
-            $this->index();
+            // When creating a model, Eloquent still
+            // uses the save() method. In this case,
+            // the field still doesn't have an id, so
+            // it is saved first, and then indexed.
+            if (! $params['id']) {
+                $saved = parent::save($options);
+                $this->index();
 
-            return $saved;
-        }
+                return $saved;
+            }
 
-        // When updating fails, it means that the
-        // index doesn't exist, so it is created.
-        if (! $this->updateIndex()) {
-            $this->index();
+            // When updating fails, it means that the
+            // index doesn't exist, so it is created.
+            if (! $this->updateIndex()) {
+                $this->index();
+            }
         }
 
         return parent::save($options);
@@ -261,7 +263,9 @@ trait BouncyTrait {
      */
     public function delete()
     {
-        $this->removeIndex();
+        if (Config::get('bouncy::config.auto_index')) {
+            $this->removeIndex();
+        }
 
         return parent::delete();
     }

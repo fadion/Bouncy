@@ -101,6 +101,8 @@ The method is intentionally prefixed with 'remove' instead of 'delete', so you d
 
 Bouncy knows when a model is created, saved or deleted and it will reflect those changes to the indexes. Except for the initial index creation of an existing database, you'll generally won't need to use the above methods to manipulate indexes. Any new model's index will be added automatically, will be updated on save and removed when the model is deleted.
 
+You can disable automatic indexes altogether by setting the `auto_index` config option to `false`. Doing so, it is up to you to sync your database to the index.
+
 The only cases where Bouncy can't update or delete indexes are when doing mass updates or deletes. Those queries run directly on the query builder and it's impossible to override them. I'm investigating for a good way of doing this, but for now, the following queries don't reflect changes on indexes:
 
 ```php
