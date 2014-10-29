@@ -107,7 +107,7 @@ The only cases where Bouncy can't update or delete indexes are when doing mass u
 Product::where('price', 100)->update(['price' => 110]);
 // or
 Product::where('price', 100)->delete();
-``
+```
 
 You can still call the indexing methods manually and work the limitation. It will add an extra database query, but at least it will keep data in sync.
 ```php
