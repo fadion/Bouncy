@@ -7,7 +7,8 @@ use Elasticsearch\Client as ElasticSearch;
 class BouncyCollection extends Collection {
 
     /**
-     * Indexes all results from a collection.
+     * Indexes all the results from the
+     * collection.
      *
      * @return array
      */
@@ -22,8 +23,8 @@ class BouncyCollection extends Collection {
         foreach ($this->all() as $item) {
             $params['body'][] = array(
                 'index' => array(
-                    '_index' => Config::get('bouncy::config.index'),
-                    '_type' => $item->getTable(),
+                    '_index' => $item->getIndex(),
+                    '_type' => $item->getTypeName(),
                     '_id' => $item->getKey()
                 )
             );
@@ -35,7 +36,7 @@ class BouncyCollection extends Collection {
     }
 
     /**
-     * Deletes the indexes of a collection.
+     * Deletes the indexes of the collection.
      *
      * @return array
      */
@@ -50,14 +51,27 @@ class BouncyCollection extends Collection {
         foreach ($this->all() as $item) {
             $params['body'][] = array(
                 'delete' => array(
-                    '_index' => Config::get('bouncy::config.index'),
-                    '_type' => $item->getTable(),
+                    '_index' => $item->getIndex(),
+                    '_type' => $item->getTypeName(),
                     '_id' => $item->getKey()
                 )
             );
         }
 
         return $this->getElasticClient()->bulk($params);
+    }
+
+    /**
+     * Reindexes all the results from the
+     * collection.
+     *
+     * @return array
+     */
+    public function reindex()
+    {
+        $this->removeIndex();
+
+        return $this->index();
     }
 
     /**

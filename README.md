@@ -4,7 +4,7 @@ Elasticsearch is a great search engine, but it takes some work to transform its 
 
 This package was created for a personal project and it's still a work in progress. I don't expect it's API to change however.
 
-I was inspired and most of the implementation is based on [Elasticquent](https://github.com/adamfairholm/Elasticquent/). Without it, I would have struggled a lot more trying to understand how Eloquent works under the hood.
+I was inspired and most of the implementation is based on [Elasticquent](https://github.com/adamfairholm/Elasticquent/). Basically, it's a rewritten fork of that package. Kudos to the developers.
 
 ## Installation
 
@@ -38,16 +38,30 @@ class Product extends Eloquent {
 }
 ```
 
+## Index and Type Name
+
+The index is set in the configuration file, so you'll need to set it to a value of choice. While the type is retrieved automatically from the model's table name. This is generally a good way to structure your documents.
+
+However, you have the options to manually set an index or type name. Just add the correct attributes to your model:
+```php
+class Product extends Eloquent {
+
+    protected $indexName = 'awesome_index';
+    protected $typeName = 'cool_type';
+
+}
+```
+
 ## Indexing
 
-Before doing any real work, you'll need to index your data. Bouncy handles indexes on models or collections.
+Before doing any search query, Elasticsearch needs an index to work on. What's normally a tedious task, is rendered as easy as it gets.
 
 Index all records:
 ```php
 Product::all()->index();
 ```
 
-Index a partial collection of models:
+Index a collection of models:
 ```php
 Product::where('sold', true)->get()->index();
 ```
@@ -58,11 +72,11 @@ $product = Product::find(10);
 $product->index();
 ```
 
-Collection indexes will be added in bulk, which Elasticsearch handles quite fast. However, keep in mind that indexing a big collection is an exhaustive process. Hitting the sql database and iterating over each row needs time and resources, so try to keep the collection relatively small. You'll have to experiment with the number of data you can index at a time, depending on your server resources and configuration.
+Collection indexes will be added in bulk, which Elasticsearch handles quite fast. However, keep in mind that indexing a big collection is an exhaustive process. Hitting the SQL database and iterating over each row needs time and resources, so try to keep the collection relatively small. You'll have to experiment with the number of data you can index at a time, depending on your server resources and configuration.
 
 ## Updating Indexes
 
-Updating doesn't change much from indexing, except that it's usually more safe, as Elasticsearch reduces the chances of version conflicts. It's just a good idea to update the index when it exists, and Bouncy does that automatically. When updating, it will check if it exists and will either update or index it.
+Updating is the safe way, in version conflict terms, to reindex an existing document. When the model exists and any of it's attributes have changed, it's index will be updated. Otherwise, it will be added to the index as if calling the `index()` method. 
 
 Updating a model's index:
 ```php
@@ -71,7 +85,7 @@ $product->price = 100;
 $product->updateIndex();
 ```
 
-Updating a model's index using custom attributes. Usually, you'll want to keep the database and Elasticsearch's index in sync and the above method for updating is safer. However, for those occassions where you want manual control, you have the option:
+Updating a model's index using custom attributes. There are few use cases for this, as it's preferable to keep models and indexes in sync, but it's there when needed.
 ```php
 $product = Product::find(10);
 $product->updateIndex([
@@ -82,7 +96,7 @@ $product->updateIndex([
 
 ## Removing Indexes
 
-As in indexing, removing them works the same on both models or collections of models.
+When you're done with a model's index, obviously you can remove it.
 
 Removing the indexes of a collection:
 ```php
@@ -95,7 +109,22 @@ $product = Product::find(10);
 $product->removeIndex();
 ```
 
-The method is intentionally prefixed with 'remove' instead of 'delete', so you don't mistake it with Eloquent's delete() method.
+The method is intentionally called 'remove' instead of 'delete', so you don't mistake it with Eloquent's delete() method.
+
+## Re-indexing
+
+A convenience method that actually removes and adds the index again.
+
+Reindexing a collection:
+```php
+Product::where('condition', 'new')->get()->reindex();
+```
+
+Reindexing a single model:
+```php
+$product = Product::find(10);
+$product->reindex();
+```
 
 ## Automatic Indexes
 
@@ -111,7 +140,7 @@ Product::where('price', 100)->update(['price' => 110]);
 Product::where('price', 100)->delete();
 ```
 
-You can still call the indexing methods manually and work the limitation. It will add an extra database query, but at least it will keep data in sync.
+You can still call the indexing methods manually and work the limitation. It will add an extra database query, but at least it will keep your data in sync.
 ```php
 Product::where('price', 100)->get()->updateIndex(['price' => 110]);
 Product::where('price', 100)->update(['price' => 110]);
@@ -142,7 +171,7 @@ foreach ($products as $product) {
 }
 ```
 
-The `$params` array is exactly as Elasticsearch expects for it to build a JSON request. Nothing new here! You can easily build whatever search query you want, be it a match, multi_match, more_like_this, etc. As you may have noticed, the only missing parameters are 'index' and 'type'. Those are passed automatically by Bouncy. The index is read from the config file, while the type is taken from the model in the same way as Eloquent does.
+The `$params` array is exactly as Elasticsearch expects for it to build a JSON request. Nothing new here! You can easily build whatever search query you want, be it a match, multi_match, more_like_this, etc.
 
 ## Highlights
 
@@ -200,9 +229,20 @@ Limit to 50 results:
 $products = Product::search($params)->limit(50);
 ```
 
-Or with the alias:
+## Results Information
+
+Elasticsearch provides some information for the query, as the total number of hits or time taken. Bouncy's results collections have methods for easily accessing that information.
+
 ```php
-$products = Product::search($params)->take(50);
+$products = Product::search($params);
+
+$products->total(); // Total number of hits
+$products->maxScore(); // Maximum score of the results
+$products->took(); // Time in ms it took to run the query
+$products->timedOut(); // Wheather the query timed out, or not.
+
+$products->shards(); // Array of shards information
+$products->shards($key); // Information on specific shard
 ```
 
 ## Searching Shorthands

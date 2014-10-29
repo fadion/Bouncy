@@ -223,6 +223,18 @@ trait BouncyTrait {
     }
 
     /**
+     * Reindexes the model.
+     *
+     * @return array
+     */
+    public function reindex()
+    {
+        $this->removeIndex();
+
+        return $this->index();
+    }
+
+    /**
      * Runs indexing functions before calling
      * Eloquent's save() method.
      *
@@ -268,6 +280,34 @@ trait BouncyTrait {
         }
 
         return parent::delete();
+    }
+
+    /**
+     * Returns the index name.
+     *
+     * @return string
+     */
+    public function getIndex()
+    {
+        if (isset($this->indexName)) {
+            return $this->indexName;
+        }
+
+        return Config::get('bouncy::config.index');
+    }
+
+    /**
+     * Returns the type name.
+     *
+     * @return string
+     */
+    public function getTypeName()
+    {
+        if (isset($this->typeName)) {
+            return $this->typeName;
+        }
+
+        return $this->getTable();
     }
 
     /**
@@ -325,10 +365,9 @@ trait BouncyTrait {
      */
     protected function basicElasticParams($withId = false)
     {
-        $config = Config::get('bouncy::config');
         $params = array(
-            'index' => $config['index'],
-            'type' => $this->getTable()
+            'index' => $this->getIndex(),
+            'type' => $this->getTypeName()
         );
 
         if ($withId) {

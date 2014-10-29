@@ -56,17 +56,6 @@ class ElasticCollection extends Collection {
     }
 
     /**
-     * Alias of limit.
-     *
-     * @param null|int $limit
-     * @return ElasticCollection
-     */
-    public function take($limit = null)
-    {
-        return $this->limit($limit);
-    }
-
-    /**
      * Builds a list of models from Elasticsearch
      * results.
      *
@@ -94,7 +83,7 @@ class ElasticCollection extends Collection {
     }
 
     /**
-     * Max score from results.
+     * Max score of the results.
      *
      * @return string
      */
