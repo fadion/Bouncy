@@ -47,7 +47,8 @@ class ElasticCollection extends Collection {
         if ($limit) {
             if ($limit < 0) {
                 $this->items = array_slice($this->items, $limit, abs($limit));
-            } else {
+            }
+            else {
                 $this->items = array_slice($this->items, 0, $limit);
             }
         }

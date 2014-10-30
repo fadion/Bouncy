@@ -127,6 +127,17 @@ $product = Product::find(10);
 $product->reindex();
 ```
 
+## Concurrency Control
+
+Elasticsearch assumes that no document conflict will arise during indexing and as such, it doesn't provide automatic concurrency control. However, it does provide version information on documents that can be used to ensure that an older document doesn't override a newer one. This is the suggested technique described in the manual.
+
+Bouncy provides a single method for indexing by checking the version. It will only update the index if the version specified matches the one in the document, or return false otherwise. Obviously, it is concurrency-safe.
+
+```php
+$product = Product::find(10);
+$product->indexWithVersion(3);
+```
+
 ## Automatic Indexes
 
 Bouncy knows when a model is created, saved or deleted and it will reflect those changes to the indexes. Except for the initial index creation of an existing database, you'll generally won't need to use the above methods to manipulate indexes. Any new model's index will be added automatically, will be updated on save and removed when the model is deleted.

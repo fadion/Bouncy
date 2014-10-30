@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Config;
 use Elasticsearch\Client as ElasticSearch;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
+use Elasticsearch\Common\Exceptions\Conflict409Exception;
 
 trait BouncyTrait {
 
@@ -211,10 +212,12 @@ trait BouncyTrait {
         // the update.
         if ($fields) {
             $body = $fields;
+        }
         // Or get the model's modified fields.
-        } elseif ($this->getDirty()) {
+        elseif ($this->isDirty()) {
             $body = $this->getDirty();
-        } else {
+        }
+        else {
             return false;
         }
 
@@ -223,7 +226,8 @@ trait BouncyTrait {
 
         try {
             return $this->getElasticClient()->update($params);
-        } catch(Missing404Exception $e) {
+        }
+        catch (Missing404Exception $e) {
             return false;
         }
     }
@@ -237,7 +241,8 @@ trait BouncyTrait {
     {
         try {
             return $this->getElasticClient()->delete($this->basicElasticParams(true));
-        } catch(Missing404Exception $e) {
+        }
+        catch (Missing404Exception $e) {
             return false;
         }
     }
@@ -252,6 +257,27 @@ trait BouncyTrait {
         $this->removeIndex();
 
         return $this->index();
+    }
+
+    /**
+     * @param int $version
+     * @return array|bool
+     */
+    public function indexWithVersion($version)
+    {
+        try {
+            $params = $this->basicElasticParams(true);
+            $params['body'] = $this->toArray();
+            $params['version'] = $version;
+
+            return $this->getElasticClient()->index($params);
+        }
+        catch (Missing404Exception $e) {
+            return false;
+        }
+        catch (Conflict409Exception $e) {
+            return false;
+        }
     }
 
     /**
