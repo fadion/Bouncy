@@ -28,21 +28,22 @@ I was inspired and most of the implementation is based on [Elasticquent](https:/
 There's only one step to tell your models that they should use Bouncy. Just add a trait! I'll be using a fictional `Product` model for the examples.
 
 ```php
-// file Product.php
 use Fadion\Bouncy\BouncyTrait;
 
 class Product extends Eloquent {
     
     use BouncyTrait;
-
+    
+    // ...other Eloquent attributes
+    // or methods.
 }
 ```
 
 ## Index and Type Name
 
-The index is set in the configuration file, so you'll need to set it to a value of choice. While the type is retrieved automatically from the model's table name. This is generally a good way to structure your documents.
+The index can be set in the configuration file, while the type name is retrieved automatically from the model's table name. This is generally a good way to structure your documents, as you configure it once and forget about it.
 
-However, you have the options to manually set an index or type name. Just add the correct attributes to your model:
+When you need to set the index or type name specifically, just add the following attributes to your models:
 ```php
 class Product extends Eloquent {
 
@@ -113,7 +114,7 @@ The method is intentionally called 'remove' instead of 'delete', so you don't mi
 
 ## Re-indexing
 
-A convenience method that actually removes and adds the index again.
+A convenience method that actually removes and adds the index again. It is most useful when you want a document to get a fresh index, resetting version information.
 
 Reindexing a collection:
 ```php
@@ -173,33 +174,6 @@ foreach ($products as $product) {
 
 The `$params` array is exactly as Elasticsearch expects for it to build a JSON request. Nothing new here! You can easily build whatever search query you want, be it a match, multi_match, more_like_this, etc.
 
-## Highlights
-
-Highlights are a nice feature to visualize the search query in your printed data. Bouncy augments the models with the highlighted fields when there are ones present. We'll use the same example as above, but this time we'll define a highlighted field.
-
-```php
-$params = [
-    'query' => [
-        'match' => [
-            'title' => 'github'
-        ]
-    ],
-    'highlight' => [
-        'fields' => [
-            'title' => new \stdClass
-        ]
-    ]
-];
-
-$products = Product::search($params);
-
-foreach ($products as $product) {
-    echo $product->highlightedTitle;
-}
-```
-
-The convention is that any highlight field with be appended with `highlighted` and be in camelCase. For example, a 'price' field will be named to 'highlightedPrice', while 'offer_price' will be named 'highlightedOfferPrice'.
-
 ## Pagination
 
 Paginated results are important in an application and it's generally a pain with raw Elasticsearch results. Another good reason for using Bouncy! It paginates results in exactly the same way as Eloquent does, so you don't have to learn anything new.
@@ -244,6 +218,47 @@ $products->timedOut(); // Wheather the query timed out, or not.
 $products->shards(); // Array of shards information
 $products->shards($key); // Information on specific shard
 ```
+
+## Document Information
+
+Elasticsearch documents have some information such as score and version. You can access those data using the following methods:
+
+```php
+$products = Product::search($params);
+
+foreach ($products as $product) {
+    $product->isDocument(); // Checks if it's an Elasticsearch document
+    $product->documentScore(); // Score set in search results
+    $product->documentVersion(); // Document version if present
+}
+```
+
+## Highlights
+
+Highlights are a nice visual feature to enhance your search results. Bouncy makes it really easy to access the highlighted fields.
+
+```php
+$params = [
+    'query' => [
+        'match' => [
+            'title' => 'github'
+        ]
+    ],
+    'highlight' => [
+        'fields' => [
+            'title' => new \stdClass
+        ]
+    ]
+];
+
+$products = Product::search($params);
+
+foreach ($products as $product) {
+    echo $product->highlight('title');
+}
+```
+
+The `highlight()` method will access any highlighted field with the provided name or fail silently (actually, returns false) if it doesn't find one.
 
 ## Searching Shorthands
 

@@ -7,6 +7,26 @@ use Elasticsearch\Common\Exceptions\Missing404Exception;
 trait BouncyTrait {
 
     /**
+     * @var null|float
+     */
+    protected $documentScore = null;
+
+    /**
+     * @var null|float
+     */
+    protected $documentVersion = null;
+
+    /**
+     * @var bool
+     */
+    protected $isDocument = false;
+
+    /**
+     * @var array
+     */
+    protected $highlighted = array();
+
+    /**
      * Builds an arbitrary query.
      *
      * @param array $body
@@ -311,6 +331,52 @@ trait BouncyTrait {
     }
 
     /**
+     * Returns wheather or not the model
+     * represents an Elasticsearch document.
+     *
+     * @return bool
+     */
+    public function isDocument()
+    {
+        return $this->isDocument;
+    }
+
+    /**
+     * Returns the document score.
+     *
+     * @return null\float
+     */
+    public function documentScore()
+    {
+        return $this->documentScore;
+    }
+
+    /**
+     * Returns the document version.
+     *
+     * @return null|int
+     */
+    public function documentVersion()
+    {
+        return $this->documentVersion;
+    }
+
+    /**
+     * Returns a highlighted field.
+     *
+     * @param string $field
+     * @return mixed
+     */
+    public function highlight($field)
+    {
+        if (isset($this->highlighted[$field])) {
+            return $this->highlighted[$field];
+        }
+
+        return false;
+    }
+
+    /**
      * Instructs Eloquent to use a custom
      * collection class.
      *
@@ -336,19 +402,19 @@ trait BouncyTrait {
         $attributes = $hit['_source'];
         $attributes['id'] = $hit['_id'];
 
+        $instance->isDocument = true;
+
         if (isset($hit['_score'])) {
-            $attributes['elasticScore'] = $hit['_score'];
+            $instance->documentScore = $hit['_score'];
         }
 
         if (isset($hit['_version'])) {
-            $attributes['elasticVersion'] = $hit['_version'];
+            $instance->documentVersion = $hit['_version'];
         }
 
-        // Highlights are set as model attributes,
-        // with a "highlighted" prefix.
         if (isset($hit['highlight'])) {
             foreach ($hit['highlight'] as $field => $value) {
-                $attributes['highlighted'.ucfirst(studly_case($field))] = $value[0];
+                $instance->highlighted[$field] = $value[0];
             }
         }
 
