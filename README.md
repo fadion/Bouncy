@@ -322,7 +322,7 @@ class MyAwesomeCollection extends Collection {
 
 ## Elasticsearch Client Facade
 
-Finally, when you'll need it, you can access Elasticsearch's native client in Laravel fashion using a Facade. For this step to work, you'll need to add an alias in `app/config/app.php` in the aliases array: `Fadion\Bouncy\Facades\Elastic`.
+Finally, when you'll need it, you can access Elasticsearch's native client in Laravel fashion using a Facade. For this step to work, you'll need to add an alias in `app/config/app.php` in the aliases array: `'Elastic' => 'Fadion\Bouncy\Facades\Elastic'`.
 
 ```php
 Elastic::index();
