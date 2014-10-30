@@ -305,6 +305,21 @@ more_like_this query
 $products = Product::moreLikeThis(Array $fields, Array $ids, $minTermFreq = 1, $percentTermsToMatch = 0.5, $minWordLength = 3)
 ```
 
+## Custom Collection
+
+If you are using a custom collection for Eloquent, you can still keep using Bouncy's methods. You'll just need to add a trait to your collection class.
+
+```php
+use Illuminate\Database\Eloquent\Collection;
+use Fadion\Bouncy\BouncyCollectionTrait;
+
+class MyAwesomeCollection extends Collection {
+
+    use BouncyCollectionTrait;
+
+}
+```
+
 ## Elasticsearch Client Facade
 
 Finally, when you'll need it, you can access Elasticsearch's native client in Laravel fashion using a Facade. For this step to work, you'll need to add an alias in `app/config/app.php` in the aliases array: `Fadion\Bouncy\Facades\Elastic`.
