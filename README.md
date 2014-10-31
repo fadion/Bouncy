@@ -6,6 +6,29 @@ This package was created for a personal project and it's still a work in progres
 
 I was inspired and most of the implementation is based on [Elasticquent](https://github.com/adamfairholm/Elasticquent/). Basically, it's a rewritten fork of that package. Kudos to the developers.
 
+## Table of Contents
+
+* [Installation](#installation)
+* [Setting Up](#setting-up)
+* [Indexes](#indexes)
+    * [Index and Type Name](#index-and-type-name)
+    * [Indexing](#indexing)
+    * [Updating Indexes](#updating-indexes)
+    * [Removing Indexes](#removing-indexes)
+    * [Re-indexing](#re-indexing)
+    * [Concurrency Control](#concurrency-control)
+    * [Automatic Indexes](#automatic-indexes)
+* [Mappings](#mappings)
+* [Searching](#searching)
+    * [Pagination](#pagination)
+    * [Limit](#limit)
+    * [Results Information](#results-information)
+    * [Document Information](#document-information)
+    * [Highlights](#highlights)
+    * [Searching Shorthands](#searching-shorthands)
+* [Custom Collection](#custom-collection)
+* [Elasticsearch Client Facade](#elasticsearch-client-facade)
+
 ## Installation
 
 - Add the package to your `composer.json` file and run `composer update`:
