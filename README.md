@@ -10,8 +10,7 @@ I was inspired and most of the implementation is based on [Elasticquent](https:/
 
 * [Installation](#installation)
 * [Setting Up](#setting-up)
-* [Indexes](#indexes)
-    * [Index and Type Name](#index-and-type-name)
+* [Indexes](#index-and-type-name)
     * [Indexing](#indexing)
     * [Updating Indexes](#updating-indexes)
     * [Removing Indexes](#removing-indexes)
