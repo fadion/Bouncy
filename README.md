@@ -161,6 +161,59 @@ Product::where('price', 100)->get()->removeIndex();
 Product::where('price', 100)->delete();
 ```
 
+## Mappings
+
+Mappings can be created as easily as anything you've seen until now. They are defined as a class property of a model and handled using some simple methods.
+
+Add mapping properties to a model:
+```php
+use Fadion\Bouncy\BouncyTrait;
+
+class Product extends Eloquent {
+    
+    use BouncyTrait;
+    
+    protected $mappingProperties = [
+        'title' => [
+            'type' => 'string',
+            'store' => true
+        ],
+        'description' => [
+            'type' => 'string',
+            'index' => 'analyzed'
+        ]
+    ]
+    
+}
+```
+
+Put those mappings:
+```php
+Product::putMapping();
+```
+
+Get mappings:
+```php
+Product::getMapping();
+```
+
+Delete mappings:
+```php
+Product::deleteMapping();
+```
+
+Rebuild (delete and put again) mappings:
+```php
+Product::rebuildMapping();
+```
+
+Check if mappings exist:
+```php
+if (Product::hasMapping()) {
+    // do something
+}
+```
+
 ## Searching
 
 Now on the real deal! Searching is where Elasticsearch shines and why you're bothering with it. Bouncy doesn't get in the way, allowing you to build any search query you can imagine in exactly the same way you do with Elasticsearch's client. This allows for great flexibility, while providing your results with a collection of Eloquent models.

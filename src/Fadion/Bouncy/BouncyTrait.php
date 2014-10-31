@@ -188,6 +188,90 @@ trait BouncyTrait {
     }
 
     /**
+     * Gets mappings.
+     *
+     * @return array
+     */
+    public static function getMapping()
+    {
+        $instance = new static;
+        $params = $instance->basicElasticParams();
+
+        return $instance->getElasticClient()->indices()->getMapping($params);
+    }
+
+    /**
+     * Puts mappings.
+     *
+     * @return array
+     */
+    public static function putMapping()
+    {
+        $instance = new static;
+        $mapping = $instance->basicElasticParams();
+        $params = array(
+            '_source'       => array('enabled' => true),
+            'properties'    => $instance->getMappingProperties()
+        );
+
+        $mapping['body'][$instance->getTypeName()] = $params;
+
+        return $instance->getElasticClient()->indices()->putMapping($mapping);
+    }
+
+    /**
+     * Deletes mappings.
+     *
+     * @return array
+     */
+    public static function deleteMapping()
+    {
+        $instance = new static;
+        $params = $instance->basicElasticParams();
+
+        return $instance->getElasticClient()->indices()->deleteMapping($params);
+    }
+
+    /**
+     * Checks if mappings exist.
+     *
+     * @return bool
+     */
+    public static function hasMapping()
+    {
+        $instance = new static;
+        $mapping = $instance->getMapping();
+
+        return (empty($mapping)) ? false : true;
+    }
+
+    /**
+     * Rebuilds mappings.
+     *
+     * @return array
+     */
+    public static function rebuildMapping()
+    {
+        $instance = new static;
+
+        if ($instance->hasMapping()) {
+            $instance->deleteMapping();
+        }
+
+        return $instance->putMapping();
+    }
+
+    /**
+     * Gets mapping properties from the model.
+     *
+     * @return array
+     */
+    protected function getMappingProperties()
+    {
+        return $this->mappingProperties;
+    }
+
+    /**
      * Indexes the model in Elasticsearch.
      *
      * @return array
@@ -462,7 +546,7 @@ trait BouncyTrait {
             'type' => $this->getTypeName()
         );
 
-        if ($withId) {
+        if ($withId and $this->getKey()) {
             $params['id'] = $this->getKey();
         }
 
