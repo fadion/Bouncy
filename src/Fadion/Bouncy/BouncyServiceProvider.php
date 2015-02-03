@@ -2,7 +2,6 @@
 
 use Illuminate\Support\ServiceProvider;
 use Elasticsearch\Client as ElasticSearch;
-use Illuminate\Support\Facades\Config;
 
 class BouncyServiceProvider extends ServiceProvider {
 
@@ -20,10 +19,10 @@ class BouncyServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-        $this->package('fadion/bouncy');
-
-        // Register the package's config.
-        $this->app['config']->package('fadion/bouncy', __DIR__.'/../../config', 'fadion/bouncy');
+        $this->publishes(array(
+            __DIR__.'/../../config/config.php' => config_path('bouncy.php'),
+            __DIR__.'/../../config/elasticsearch.php' => config_path('elasticsearch.php')
+        ));
     }
 
     /**
@@ -33,8 +32,13 @@ class BouncyServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-        $this->app->singleton('elastic', function() {
-            return new ElasticSearch(Config::get('bouncy::elasticsearch'));
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/config.php',
+            'bouncy'
+        );
+
+        $this->app->singleton('elastic', function($app) {
+            return new ElasticSearch($app['config']->get('elasticsearch'));
         });
     }
 
@@ -45,7 +49,7 @@ class BouncyServiceProvider extends ServiceProvider {
      */
     public function provides()
     {
-        return array();
+        return array('elastic');
     }
 
 }
