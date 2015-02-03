@@ -80,7 +80,7 @@ trait BouncyCollectionTrait {
      */
     protected function getElasticClient()
     {
-        return new ElasticSearch(Config::get('bouncy::elasticsearch'));
+        return new ElasticSearch(Config::get('elasticsearch'));
     }
 
 }
