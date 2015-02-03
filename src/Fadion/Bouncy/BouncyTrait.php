@@ -373,7 +373,7 @@ trait BouncyTrait {
      */
     public function save(Array $options = array())
     {
-        if (Config::get('bouncy::config.auto_index')) {
+        if (Config::get('bouncy.auto_index')) {
             $params = $this->basicElasticParams(true);
 
             // When creating a model, Eloquent still
@@ -405,7 +405,7 @@ trait BouncyTrait {
      */
     public function delete()
     {
-        if (Config::get('bouncy::config.auto_index')) {
+        if (Config::get('bouncy.auto_index')) {
             $this->removeIndex();
         }
 
@@ -423,7 +423,7 @@ trait BouncyTrait {
             return $this->indexName;
         }
 
-        return Config::get('bouncy::config.index');
+        return Config::get('bouncy.index');
     }
 
     /**
@@ -560,7 +560,7 @@ trait BouncyTrait {
      */
     protected function getElasticClient()
     {
-        return new ElasticSearch(Config::get('bouncy::elasticsearch'));
+        return new ElasticSearch(Config::get('elasticsearch'));
     }
 
 }
