@@ -380,7 +380,7 @@ trait BouncyTrait {
             // uses the save() method. In this case,
             // the field still doesn't have an id, so
             // it is saved first, and then indexed.
-            if (! $params['id']) {
+            if (! isset($params['id'])) {
                 $saved = parent::save($options);
                 $this->index();
 
