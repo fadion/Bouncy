@@ -1,3 +1,5 @@
+> To use it in Laravel 5, please see the `l5` branch.
+
 # Bouncy
 
 Elasticsearch is a great search engine, but it takes some work to transform its results to an easy to use dataset. Bouncy does exactly that: it maps Elasticsearch results to Eloquent models, so you can keep using the same logic with some special enhancements. In addition, it handles indexing, either manually or automatically on model creation, update or deletion.
