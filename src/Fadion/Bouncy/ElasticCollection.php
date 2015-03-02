@@ -1,7 +1,7 @@
 <?php namespace Fadion\Bouncy;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Paginator;
+use Illuminate\Pagination\Paginator;
 
 class ElasticCollection extends Collection {
 
@@ -28,12 +28,12 @@ class ElasticCollection extends Collection {
      */
     public function paginate($perPage = 15)
     {
-        $paginator = Paginator::make($this->items, count($this->items), $perPage);
+        $paginator = new Paginator($this->items, $perPage);
 
-        $start = ($paginator->getCurrentPage() - 1) * $perPage;
+        $start = ($paginator->currentPage() - 1) * $perPage;
         $sliced = array_slice($this->items, $start, $perPage);
 
-        return Paginator::make($sliced, count($this->items), $perPage);
+        return new Paginator($sliced, $perPage);
     }
 
     /**
