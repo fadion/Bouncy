@@ -272,6 +272,16 @@ trait BouncyTrait {
     }
 
     /**
+     * Gets the model's fields.
+     *
+     * @return array
+     */
+    public function getFields()
+    {
+        return (empty($this->documentFields)) ? $this->toArray() : $this->documentFields;
+    }
+
+    /**
      * Indexes the model in Elasticsearch.
      *
      * @return array
@@ -279,7 +289,7 @@ trait BouncyTrait {
     public function index()
     {
         $params = $this->basicElasticParams(true);
-        $params['body'] = $this->toArray();
+        $params['body'] = $this->getFields();
 
         return $this->getElasticClient()->index($params);
     }
@@ -351,7 +361,7 @@ trait BouncyTrait {
     {
         try {
             $params = $this->basicElasticParams(true);
-            $params['body'] = $this->toArray();
+            $params['body'] = $this->getFields();
             $params['version'] = $version;
 
             return $this->getElasticClient()->index($params);

@@ -27,6 +27,7 @@ I was inspired and most of the implementation is based on [Elasticquent](https:/
     * [Document Information](#document-information)
     * [Highlights](#highlights)
     * [Searching Shorthands](#searching-shorthands)
+* [Customizing Document Fields](#customizing-document-fields)
 * [Custom Collection](#custom-collection)
 * [Elasticsearch Client Facade](#elasticsearch-client-facade)
 
@@ -380,6 +381,26 @@ $products = Product::ids(Array $values)
 more_like_this query
 ```php
 $products = Product::moreLikeThis(Array $fields, Array $ids, $minTermFreq = 1, $percentTermsToMatch = 0.5, $minWordLength = 3)
+```
+
+## Customizing Document Fields
+
+Bouncy will use your model's attributes while indexing and that should be fine for most cases. However, if you want to have control over the Elasticsearch documents structure, you can customize the fields by adding a `$documentFields` property to your model:
+
+```php
+use Fadion\Bouncy\BouncyTrait;
+
+class Product extends Eloquent {
+    
+    use BouncyTrait;
+    
+    protected $documentFields = [
+        'id' => $this->id,
+        'price' => $this->price,
+        'rating' => 'perfect'
+    ];
+
+}
 ```
 
 ## Custom Collection
