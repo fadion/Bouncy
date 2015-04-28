@@ -30,7 +30,7 @@ class ElasticCollection extends Collection {
     {
         $paginator = Paginator::make($this->items, count($this->items), $perPage);
 
-        $start = ($paginator->getCurrentPage() - 1) * $perPage;
+        $start = ($paginator->getFactory()->getCurrentPage() - 1) * $perPage;
         $sliced = array_slice($this->items, $start, $perPage);
 
         return Paginator::make($sliced, count($this->items), $perPage);
