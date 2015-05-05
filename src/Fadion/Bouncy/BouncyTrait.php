@@ -276,7 +276,7 @@ trait BouncyTrait {
     *
     * @return array
     */
-    public function getFields()
+    public function documentFields()
     {
         return (empty($this->documentFields)) ? $this->toArray() : $this->documentFields;
     }
@@ -289,7 +289,7 @@ trait BouncyTrait {
     public function index()
     {
         $params = $this->basicElasticParams(true);
-        $params['body'] = $this->getFields();
+        $params['body'] = $this->documentFields();
 
         return $this->getElasticClient()->index($params);
     }
@@ -361,7 +361,7 @@ trait BouncyTrait {
     {
         try {
             $params = $this->basicElasticParams(true);
-            $params['body'] = $this->getFields();
+            $params['body'] = $this->documentFields();
             $params['version'] = $version;
 
             return $this->getElasticClient()->index($params);

@@ -28,7 +28,7 @@ trait BouncyCollectionTrait {
                 )
             );
 
-            $params['body'][] = $item->getFields();
+            $params['body'][] = $item->documentFields();
         }
 
         return $this->getElasticClient()->bulk($params);
