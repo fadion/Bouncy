@@ -385,7 +385,7 @@ $products = Product::moreLikeThis(Array $fields, Array $ids, $minTermFreq = 1, $
 
 ## Customizing Document Fields
 
-Bouncy will use your model's attributes while indexing and that should be fine for most cases. However, if you want to have control over the Elasticsearch documents structure, you can customize the fields by adding a `$documentFields` property to your model:
+Bouncy will use your model's attributes while indexing and that should be fine for most cases. However, if you want to have control over the Elasticsearch documents structure, you can customize the fields by adding a `$documentFields` method to your model:
 
 ```php
 use Fadion\Bouncy\BouncyTrait;
@@ -394,11 +394,14 @@ class Product extends Eloquent {
     
     use BouncyTrait;
     
-    protected $documentFields = [
-        'id' => $this->id,
-        'price' => $this->price,
-        'rating' => 'perfect'
-    ];
+    public function documentFields()
+    {
+        return [
+            'id' => $this->id,
+            'price' => $this->price,
+            'rating' => 'perfect'
+        ];
+    };
 
 }
 ```
