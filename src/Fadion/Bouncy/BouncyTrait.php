@@ -28,6 +28,21 @@ trait BouncyTrait {
     protected $highlighted = array();
 
     /**
+     * Returns match count
+     *
+     * @param array $body
+     * @return integer
+     */
+    public static function count(Array $body)
+    {
+        $instance = new static;
+        $params = $instance->basicElasticParams();
+        $params['body'] = $body;
+        $response = $instance->getElasticClient()->count($params);
+        return intval($response['count']);
+    }
+
+    /**
      * Builds an arbitrary query.
      *
      * @param array $body
