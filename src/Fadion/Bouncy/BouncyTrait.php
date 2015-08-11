@@ -329,7 +329,7 @@ trait BouncyTrait {
             $body = $this->getDirty();
         }
         else {
-            return false;
+            return true;
         }
 
         $params = $this->basicElasticParams(true);
