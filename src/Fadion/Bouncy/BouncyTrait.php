@@ -332,6 +332,12 @@ trait BouncyTrait {
             return true;
         }
 
+        foreach ($body as $field => $value) {
+            if ($value instanceof Carbon\Carbon) {
+                $body[$field] = $value->toDateTimeString();
+            }
+        }
+        
         $params = $this->basicElasticParams(true);
         $params['body']['doc'] = $body;
 
