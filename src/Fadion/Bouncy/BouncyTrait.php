@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Config;
 use Elasticsearch\Client as ElasticSearch;
 use Elasticsearch\Common\Exceptions\Missing404Exception;
 use Elasticsearch\Common\Exceptions\Conflict409Exception;
+use Carbon\Carbon;
 
 trait BouncyTrait {
 
@@ -327,7 +328,13 @@ trait BouncyTrait {
             $body = $this->getDirty();
         }
         else {
-            return false;
+            return true;
+        }
+        
+        foreach ($body as $field => $value) {
+            if ($value instanceof Carbon) {
+                $body[$field] = $value->toDateTimeString();
+            }
         }
 
         $params = $this->basicElasticParams(true);
