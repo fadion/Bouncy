@@ -542,7 +542,6 @@ trait BouncyTrait {
         $instance = $this->newInstance(array(), true);
 
         $attributes = $hit['_source'];
-        $attributes['id'] = $hit['_id'];
 
         $instance->isDocument = true;
 
