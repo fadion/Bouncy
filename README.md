@@ -37,7 +37,7 @@ I was inspired and most of the implementation is based on [Elasticquent](https:/
 ```json
 {
     "require": {
-        "fadion/bouncy": "dev-master"
+        "fadion/bouncy": "~1.0"
     }
 }
 ```
